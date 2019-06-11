@@ -11,17 +11,23 @@ def load_data(data):
     return data
 
 
-def extract_rgb(data):
+def extract_rgb(data, targets=None):
     data = load_data(data)
-    return data[:, :, :, :3]
+    new_data = data[:, :, :, :3]
+    if targets is None:
+        return new_data
+    return new_data, targets
 
 
-def extract_hsv(data):
+def extract_hsv(data, targets=None):
     data = load_data(data)
-    return data[:, :, :, 3:]
+    new_data = data[:, :, :, 3:]
+    if targets is None:
+        return new_data
+    return new_data, targets
 
 
-def enrich_hsv_rotation(data, rotations=4):
+def enrich_hsv_rotation(data, targets=None, rotations=4):
     data = load_data(data)
     shape = list(data.shape)
     shape[-1] += rotations - 1
@@ -33,7 +39,9 @@ def enrich_hsv_rotation(data, rotations=4):
     for i in range(rotations):
         new_data[:, :, :, 3+i] = data[:, :, :, 3] + ((i * rotation_angle) & 0xff)
 
-    return new_data
+    if targets is None:
+        return new_data
+    return new_data, targets
 
 
 def enrich_mirror(data, targets, shuffle=True, seed=42):
